@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,13 +7,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PetSize {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+enum EnergyLevel {
+  ONE
+  TWO
+  THREE
+  FOUR
+  FIVE
+}
+
+
+enum Environment {
+  SMALL_SPACE    
+  MEDIUM_SPACE   
+  LARGE_SPACE    
+}
+
 model Org {
   id          String @id @default(uuid())
   name        String
   author_name String
   email       String @unique
   whatsapp    String
-  password    String
+  password_hash    String
 
   cep          String
   state        String
@@ -40,9 +55,9 @@ model Pet {
   name         String
   about        String
   age          String
-  size         String
-  energy_level String
-  environment  String
+  size         PetSize 
+  energy_level EnergyLevel
+  environment  Environment
   org_id       String
 
   org Org @relation(fields: [org_id], references: [id])
