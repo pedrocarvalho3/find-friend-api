@@ -1,25 +1,66 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
+import { OrgAlreadyExistsError } from '@/use-cases/errors/org-already-exists-error'
+import { makeRegisterOrgUseCase } from '@/use-cases/fatories/make-register-use-case'
 
 export async function register(request: FastifyRequest, reply: FastifyReply) {
   const registerBodySchema = z.object({
     name: z.string(),
     email: z.string().email(),
     password: z.string().min(6),
+    author_name: z.string(),
+    whatsapp: z.string(),
+    cep: z.string(),
+    state: z.string(),
+    city: z.string(),
+    neighborhood: z.string(),
+    street: z.string(),
+    latitude: z.number().refine((value) => {
+      return Math.abs(value) <= 90
+    }),
+    longitude: z.number().refine((value) => {
+      return Math.abs(value) <= 180
+    }),
   })
 
-  const { name, email, password } = registerBodySchema.parse(request.body)
+  const {
+    name,
+    email,
+    password,
+    author_name,
+    whatsapp,
+    cep,
+    state,
+    city,
+    neighborhood,
+    street,
+    latitude,
+    longitude,
+  } = registerBodySchema.parse(request.body)
 
   try {
-    const registerUseCase = makeRegisterUseCase()
+    const registerUseCase = makeRegisterOrgUseCase()
 
     await registerUseCase.execute({
       name,
       email,
       password,
+      author_name,
+      whatsapp,
+      cep,
+      state,
+      city,
+      neighborhood,
+      street,
+      latitude,
+      longitude,
     })
   } catch (err) {
-    throw new Error(err)
+    if (err instanceof OrgAlreadyExistsError) {
+      return reply.status(409).send({ message: err.message })
+    }
+
+    throw err
   }
 
   return reply.status(201).send()
