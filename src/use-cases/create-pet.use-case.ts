@@ -1,7 +1,7 @@
-import type { OrgsRepository } from '@/repositories/orgs-repository'
-import type { PetsRepository } from '@/repositories/pets-repository'
+import type { OrgsRepository } from '@/repositories/orgs.repository'
+import type { PetsRepository } from '@/repositories/pets.repository'
 import type { $Enums, Pet } from '@prisma/client'
-import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { ResourceNotFoundError } from './errors/resource-not-found.error'
 
 interface CreatePetUseCaseRequest {
   name: string

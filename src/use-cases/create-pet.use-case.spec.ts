@@ -1,7 +1,7 @@
-import { InMemoryPetsRepository } from '@/repositories/in-memory/in-memory-pets-repository'
+import { InMemoryPetsRepository } from '@/repositories/in-memory/in-memory-pets.repository'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { CreatePetUseCase } from './create-pet.use-case'
-import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs-repository'
+import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs.repository'
 import { Decimal } from '@prisma/client/runtime/library'
 import { EnergyLevel, Environment, PetSize } from '@prisma/client'
 
@@ -11,8 +11,8 @@ let sut: CreatePetUseCase
 
 describe('Create Pet Use Case', () => {
   beforeEach(() => {
-    petsRepository = new InMemoryPetsRepository()
     orgsRepository = new InMemoryOrgsRepository()
+    petsRepository = new InMemoryPetsRepository(orgsRepository)
     sut = new CreatePetUseCase(petsRepository, orgsRepository)
   })
 

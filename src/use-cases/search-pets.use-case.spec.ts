@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { InMemoryPetsRepository } from '@/repositories/in-memory/in-memory-pets-repository'
-import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs-repository'
+import { InMemoryPetsRepository } from '@/repositories/in-memory/in-memory-pets.repository'
+import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs.repository'
 import { SearchPetsUseCase } from './search-pets.use-case'
 import { Decimal } from '@prisma/client/runtime/library'
 import { EnergyLevel, Environment, PetSize } from '@prisma/client'

@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
-import { OrgAlreadyExistsError } from '@/use-cases/errors/org-already-exists-error'
-import { makeCreateOrgUseCase } from '@/use-cases/fatories/make-create-org-use-case'
+import { OrgAlreadyExistsError } from '@/use-cases/errors/org-already-exists.error'
+import { makeCreateOrgUseCase } from '@/use-cases/fatories/make-create-org.use-case'
 
 export async function register(request: FastifyRequest, reply: FastifyReply) {
   const registerBodySchema = z.object({

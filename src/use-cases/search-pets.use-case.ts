@@ -1,4 +1,4 @@
-import type { PetsRepository } from '@/repositories/pets-repository'
+import type { PetsRepository } from '@/repositories/pets.repository'
 import type { Pet } from '@prisma/client'
 
 interface SearchPetsUseCaseRequest {

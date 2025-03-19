@@ -1,8 +1,8 @@
-import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs-repository'
+import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs.repository'
 import { compare } from 'bcryptjs'
 import { expect, describe, it, beforeEach } from 'vitest'
 import { CreateOrgUseCase } from './create-org.use-case'
-import { OrgAlreadyExistsError } from './errors/org-already-exists-error'
+import { OrgAlreadyExistsError } from './errors/org-already-exists.error'
 
 let orgsRepository: InMemoryOrgsRepository
 let sut: CreateOrgUseCase
