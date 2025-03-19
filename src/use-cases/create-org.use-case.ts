@@ -3,7 +3,7 @@ import type { Org } from '@prisma/client'
 import type { OrgsRepository } from '@/repositories/orgs-repository'
 import { OrgAlreadyExistsError } from './errors/org-already-exists-error'
 
-interface RegisterOrgUseCaseRequest {
+interface CreateOrgUseCaseRequest {
   name: string
   email: string
   author_name: string
@@ -19,11 +19,11 @@ interface RegisterOrgUseCaseRequest {
   longitude: number
 }
 
-interface RegisterOrgUseCaseResponse {
+interface CreateOrgUseCaseResponse {
   org: Org
 }
 
-export class RegisterOrgUseCase {
+export class CreateOrgUseCase {
   constructor(private orgsRepository: OrgsRepository) {}
 
   async execute({
@@ -39,7 +39,7 @@ export class RegisterOrgUseCase {
     street,
     latitude,
     longitude,
-  }: RegisterOrgUseCaseRequest): Promise<RegisterOrgUseCaseResponse> {
+  }: CreateOrgUseCaseRequest): Promise<CreateOrgUseCaseResponse> {
     const password_hash = await bcrypt.hash(password, 6)
 
     const userWithSameEmail = await this.orgsRepository.findByEmail(email)

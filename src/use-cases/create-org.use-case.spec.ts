@@ -1,19 +1,19 @@
 import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs-repository'
 import { compare } from 'bcryptjs'
 import { expect, describe, it, beforeEach } from 'vitest'
-import { RegisterOrgUseCase } from './register-org'
+import { CreateOrgUseCase } from './create-org.use-case'
 import { OrgAlreadyExistsError } from './errors/org-already-exists-error'
 
 let orgsRepository: InMemoryOrgsRepository
-let sut: RegisterOrgUseCase
+let sut: CreateOrgUseCase
 
-describe('Register Use Case', () => {
+describe('Create Use Case', () => {
   beforeEach(() => {
     orgsRepository = new InMemoryOrgsRepository()
-    sut = new RegisterOrgUseCase(orgsRepository)
+    sut = new CreateOrgUseCase(orgsRepository)
   })
 
-  it('should to register', async () => {
+  it('should to create', async () => {
     const { org } = await sut.execute({
       name: 'John Doe',
       email: 'johndoe@example.com',
@@ -25,8 +25,8 @@ describe('Register Use Case', () => {
       city: 'São Paulo',
       neighborhood: 'Bairro',
       street: 'Rua',
-      latitude: 0,
-      longitude: 0,
+      latitude: -27.2092052,
+      longitude: -49.6401091,
     })
 
     expect(org.id).toEqual(expect.any(String))
@@ -44,8 +44,8 @@ describe('Register Use Case', () => {
       city: 'São Paulo',
       neighborhood: 'Bairro',
       street: 'Rua',
-      latitude: 0,
-      longitude: 0,
+      latitude: -27.2092052,
+      longitude: -49.6401091,
     })
 
     const isPasswordCorrectlyHashed = await compare('123456', org.password_hash)
@@ -53,7 +53,7 @@ describe('Register Use Case', () => {
     expect(isPasswordCorrectlyHashed).toBe(true)
   })
 
-  it('should not be able to register with same email twice', async () => {
+  it('should not be able to Create with same email twice', async () => {
     const email = 'johndoe@example.com'
 
     await sut.execute({
@@ -67,8 +67,8 @@ describe('Register Use Case', () => {
       city: 'São Paulo',
       neighborhood: 'Bairro',
       street: 'Rua',
-      latitude: 0,
-      longitude: 0,
+      latitude: -27.2092052,
+      longitude: -49.6401091,
     })
 
     await expect(() =>
@@ -83,8 +83,8 @@ describe('Register Use Case', () => {
         city: 'São Paulo',
         neighborhood: 'Bairro',
         street: 'Rua',
-        latitude: 0,
-        longitude: 0,
+        latitude: -27.2092052,
+        longitude: -49.6401091,
       }),
     ).rejects.toBeInstanceOf(OrgAlreadyExistsError)
   })
