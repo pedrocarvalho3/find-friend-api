@@ -1,12 +1,14 @@
 import type { Pet, Prisma } from '@prisma/client'
 import type { PetsRepository } from '../pets.repository'
 import { randomUUID } from 'node:crypto'
-import type { InMemoryOrgsRepository } from './in-memory-orgs.repository'
+import { InMemoryOrgsRepository } from './in-memory-orgs.repository'
 
 export class InMemoryPetsRepository implements PetsRepository {
   public items: Pet[] = []
 
-  constructor(private orgsRepository: InMemoryOrgsRepository) {}
+  constructor(
+    private orgsRepository: InMemoryOrgsRepository = new InMemoryOrgsRepository(),
+  ) {}
 
   async findManyByCity(city: string): Promise<Pet[]> {
     return this.items.filter((pet) => {
