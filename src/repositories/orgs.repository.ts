@@ -1,4 +1,4 @@
-import { Prisma, type Org } from '@prisma/client'
+import { Prisma, Org } from '@prisma/client'
 
 export interface findManyNearbyParams {
   latitude: number
