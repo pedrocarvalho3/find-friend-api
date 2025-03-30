@@ -1,59 +1,119 @@
-import { beforeEach, describe, expect, it } from 'vitest'
 import { InMemoryPetsRepository } from '@/repositories/in-memory/in-memory-pets.repository'
-import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs.repository'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { SearchPetsUseCase } from './search-pets.use-case'
-import { Decimal } from '@prisma/client/runtime/library'
+
+import { makePet } from 'tests/factories/make-pet.fatory'
+import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs.repository'
+import { makeOrg } from 'tests/factories/make-org.factory'
 import { EnergyLevel, Environment, PetSize } from '@prisma/client'
 
-let petsRepository: InMemoryPetsRepository
-let orgsRepository: InMemoryOrgsRepository
-let sut: SearchPetsUseCase
-
 describe('Search Pets Use Case', () => {
+  let orgsRepository: InMemoryOrgsRepository
+  let petsRepository: InMemoryPetsRepository
+  let sut: SearchPetsUseCase
+
   beforeEach(() => {
     orgsRepository = new InMemoryOrgsRepository()
     petsRepository = new InMemoryPetsRepository(orgsRepository)
     sut = new SearchPetsUseCase(petsRepository)
   })
 
-  it('should be able to retrieve pets by city', async () => {
-    orgsRepository.items.push({
-      id: 'org-1',
-      name: 'Pet Shelter',
-      email: 'contact@petshelter.com',
-      password_hash: 'hashed_password',
-      author_name: 'Jane Doe',
-      whatsapp: '683217673',
-      cep: '12345678',
-      state: 'SP',
-      city: 'São Paulo',
-      neighborhood: 'Centro',
-      street: 'Avenida Paulista',
-      latitude: new Decimal(-23.561414),
-      longitude: new Decimal(-46.656543),
-    })
+  it('should be able to search pets by city', async () => {
+    const org = await orgsRepository.create(makeOrg())
 
-    petsRepository.items.push({
-      id: 'pet-01',
-      name: 'Buddy',
-      about: 'A friendly golden retriever',
-      age: '3 years',
-      size: PetSize.MEDIUM,
-      energy_level: EnergyLevel.THREE,
-      environment: Environment.LARGE_SPACE,
-      org_id: 'org-1',
-    })
+    await petsRepository.create(makePet({ org_id: org.id }))
+    await petsRepository.create(makePet({ org_id: org.id }))
 
-    const { pets } = await sut.execute({ city: 'São Paulo' })
+    const org2 = await orgsRepository.create(makeOrg())
 
-    expect(pets).toHaveLength(1)
-    expect(pets[0].name).toBe('Buddy')
-    expect(pets[0].org_id).toBe('org-1')
+    await petsRepository.create(makePet({ org_id: org2.id }))
+
+    const { pets } = await sut.execute({ city: org.city })
+
+    expect(pets).toHaveLength(2)
+
+    const { pets: pets2 } = await sut.execute({ city: org2.city })
+
+    expect(pets2).toHaveLength(1)
   })
 
-  it('should return an empty array if no pets are found in the city', async () => {
-    const { pets } = await sut.execute({ city: 'Rio de Janeiro' })
+  it('should be able to search pets by city and age', async () => {
+    const org = await orgsRepository.create(makeOrg())
 
-    expect(pets).toHaveLength(0)
+    await petsRepository.create(makePet({ org_id: org.id, age: '1' }))
+    await petsRepository.create(makePet({ org_id: org.id }))
+
+    const { pets } = await sut.execute({ city: org.city, age: '1' })
+
+    expect(pets).toHaveLength(1)
+  })
+
+  it('should be able to search pets by city and size', async () => {
+    const org = await orgsRepository.create(makeOrg())
+
+    await petsRepository.create(
+      makePet({ org_id: org.id, size: PetSize.SMALL }),
+    )
+    await petsRepository.create(
+      makePet({ org_id: org.id, size: PetSize.MEDIUM }),
+    )
+    await petsRepository.create(
+      makePet({ org_id: org.id, size: PetSize.LARGE }),
+    )
+
+    const { pets } = await sut.execute({ city: org.city, size: PetSize.SMALL })
+
+    expect(pets).toHaveLength(1)
+  })
+
+  it('should be able to search pets by city and energy level', async () => {
+    const org = await orgsRepository.create(makeOrg())
+
+    await petsRepository.create(
+      makePet({ org_id: org.id, energy_level: EnergyLevel.ONE }),
+    )
+    await petsRepository.create(
+      makePet({ org_id: org.id, energy_level: EnergyLevel.TWO }),
+    )
+    await petsRepository.create(
+      makePet({ org_id: org.id, energy_level: EnergyLevel.THREE }),
+    )
+    await petsRepository.create(
+      makePet({ org_id: org.id, energy_level: EnergyLevel.FOUR }),
+    )
+    await petsRepository.create(
+      makePet({ org_id: org.id, energy_level: EnergyLevel.FIVE }),
+    )
+
+    const { pets } = await sut.execute({
+      city: org.city,
+      energy_level: EnergyLevel.ONE,
+    })
+
+    expect(pets).toHaveLength(1)
+  })
+
+  it('should be able to search pets by city and environment', async () => {
+    const org = await orgsRepository.create(makeOrg())
+
+    await petsRepository.create(
+      makePet({ org_id: org.id, environment: Environment.SMALL_SPACE }),
+    )
+    await petsRepository.create(
+      makePet({ org_id: org.id, environment: Environment.SMALL_SPACE }),
+    )
+    await petsRepository.create(
+      makePet({ org_id: org.id, environment: Environment.MEDIUM_SPACE }),
+    )
+    await petsRepository.create(
+      makePet({ org_id: org.id, environment: Environment.LARGE_SPACE }),
+    )
+
+    const { pets } = await sut.execute({
+      city: org.city,
+      environment: Environment.SMALL_SPACE,
+    })
+
+    expect(pets).toHaveLength(2)
   })
 })

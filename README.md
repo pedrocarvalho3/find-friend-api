@@ -5,7 +5,7 @@ FindAFriend API
 ## Regras da aplicação
 
 - [x] Deve ser possível se cadastrar como uma ORG
-- [ ] Deve ser possível realizar login como uma ORG
+- [x] Deve ser possível realizar login como uma ORG
 - [x] Deve ser possível cadastrar um pet
 - [x] Deve ser possível listar todos os pets disponíveis para adoção próximo ao usuário
 - [ ] Deve ser possível filtrar pets por suas características

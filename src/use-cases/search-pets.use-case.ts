@@ -1,8 +1,12 @@
 import type { PetsRepository } from '@/repositories/pets.repository'
-import type { Pet } from '@prisma/client'
+import type { EnergyLevel, Environment, Pet, PetSize } from '@prisma/client'
 
 interface SearchPetsUseCaseRequest {
   city: string
+  age?: string
+  size?: PetSize
+  energy_level?: EnergyLevel
+  environment?: Environment
 }
 
 interface SearchPetsUseCaseResponse {
@@ -14,8 +18,18 @@ export class SearchPetsUseCase {
 
   async execute({
     city,
+    age,
+    size,
+    energy_level,
+    environment,
   }: SearchPetsUseCaseRequest): Promise<SearchPetsUseCaseResponse> {
-    const pets = await this.petsRepository.findManyByCity(city)
+    const pets = await this.petsRepository.findAll({
+      city,
+      age,
+      size,
+      energy_level,
+      environment,
+    })
 
     return { pets }
   }
