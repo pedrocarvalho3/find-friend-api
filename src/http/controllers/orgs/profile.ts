@@ -10,5 +10,10 @@ export async function profile(request: FastifyRequest, reply: FastifyReply) {
     orgId: request.user.sub,
   })
 
-  return reply.status(200).send({ org })
+  return reply.status(200).send({
+    org: {
+      ...org,
+      password_hash: undefined,
+    },
+  })
 }
