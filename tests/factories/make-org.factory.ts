@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 
 type Overwrite = {
+  name?: string
   password?: string
 }
 
@@ -13,7 +14,7 @@ export function makeOrg(overwrite?: Overwrite) {
     email: faker.internet.email(),
     latitude: faker.location.latitude(),
     longitude: faker.location.longitude(),
-    name: faker.company.name(),
+    name: overwrite?.name ?? faker.company.name(),
     neighborhood: faker.location.streetAddress(),
     password_hash: overwrite?.password ?? faker.internet.password(),
     state: faker.location.state(),
