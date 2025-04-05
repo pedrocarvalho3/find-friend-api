@@ -27,13 +27,6 @@ export class InMemoryPetsRepository implements PetsRepository {
     return pets
   }
 
-  async findManyByCity(city: string): Promise<Pet[]> {
-    return this.items.filter((pet) => {
-      const org = this.orgsRepository.items.find((org) => org.id === pet.org_id)
-      return org?.city.toLowerCase() === city.toLowerCase()
-    })
-  }
-
   async findById(id: string): Promise<Pet | null> {
     return this.items.find((pet) => pet.id === id) || null
   }
