@@ -4,7 +4,7 @@ import { CreateOrgUseCase } from '../create-org.use-case'
 export function makeCreateOrgUseCase() {
   const orgsRepository = new PrismaOrgsRepository()
 
-  const createOrgUseCase = new CreateOrgUseCase(orgsRepository)
+  const useCase = new CreateOrgUseCase(orgsRepository)
 
-  return createOrgUseCase
+  return useCase
 }

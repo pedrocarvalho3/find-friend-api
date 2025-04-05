@@ -6,13 +6,13 @@ import { FetchNearbyOrgsUseCase } from './fetch-nearby-orgs.use-case'
 let orgsRepository: InMemoryOrgsRepository
 let sut: FetchNearbyOrgsUseCase
 
-describe('Check-in Use Case', () => {
+describe('Nearby Org Use Case', () => {
   beforeEach(() => {
     orgsRepository = new InMemoryOrgsRepository()
     sut = new FetchNearbyOrgsUseCase(orgsRepository)
   })
 
-  it('should not be able to check in on distant gym', async () => {
+  it('should not be able to check in on distant org', async () => {
     orgsRepository.items.push({
       id: 'org-1',
       name: 'Pet Shelter',

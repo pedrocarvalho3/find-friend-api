@@ -1,4 +1,4 @@
-import type { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs.repository'
+import type { OrgsRepository } from '@/repositories/orgs.repository'
 import type { Org } from '@prisma/client'
 
 interface FetchNearbyOrgsUseCaseRequest {
@@ -11,7 +11,7 @@ interface FetchNearbyOrgsUseCaseResponse {
 }
 
 export class FetchNearbyOrgsUseCase {
-  constructor(private orgsRepository: InMemoryOrgsRepository) {}
+  constructor(private orgsRepository: OrgsRepository) {}
 
   async execute({
     userLatitude,

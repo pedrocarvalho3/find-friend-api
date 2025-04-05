@@ -4,7 +4,7 @@ import { GetOrgProfileUseCase } from '../get-org-profile.use-case'
 export function makeGetOrgProfileUseCase() {
   const orgsRepository = new PrismaOrgsRepository()
 
-  const getOrgProfileUseCase = new GetOrgProfileUseCase(orgsRepository)
+  const useCase = new GetOrgProfileUseCase(orgsRepository)
 
-  return getOrgProfileUseCase
+  return useCase
 }
