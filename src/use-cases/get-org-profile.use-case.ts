@@ -3,7 +3,7 @@ import { ResourceNotFoundError } from './errors/resource-not-found.error'
 import type { Org } from '@prisma/client'
 
 interface GetOrgProfileUseCaseRequest {
-  orgId: number
+  orgId: string
 }
 
 interface GetOrgProfileUseCaseResponse {
