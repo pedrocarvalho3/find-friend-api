@@ -16,7 +16,7 @@ export function makeOrg(overwrite?: Overwrite) {
     longitude: faker.location.longitude(),
     name: overwrite?.name ?? faker.company.name(),
     neighborhood: faker.location.streetAddress(),
-    password_hash: overwrite?.password ?? faker.internet.password(),
+    password: overwrite?.password ?? faker.internet.password(),
     state: faker.location.state(),
     street: faker.location.street(),
     whatsapp: faker.phone.number(),

@@ -5,7 +5,6 @@ import { app } from '@/app'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { makeOrg } from 'tests/factories/make-org.factory'
 import { makePet } from 'tests/factories/make-pet.fatory'
-import { createAndAuthenticateUser } from '@/utils/test/create-and-authenticate-user'
 import { prisma } from '@/lib/prisma'
 
 describe('Search Pets (E2E)', () => {
@@ -18,7 +17,15 @@ describe('Search Pets (E2E)', () => {
   })
 
   it('should be able to search pets by city', async () => {
-    const { token } = await createAndAuthenticateUser(app)
+    const org = makeOrg()
+
+    await request(app.server).post('/orgs').send(org)
+
+    const authResponse = await request(app.server)
+      .post('/sessions')
+      .send({ email: org.email, password: org.password })
+
+    const token = authResponse.body.token
 
     await request(app.server)
       .post('/orgs/pets')
@@ -29,10 +36,13 @@ describe('Search Pets (E2E)', () => {
       .post('/orgs/pets')
       .set('Authorization', `Bearer ${token}`)
       .send(makePet())
+
+    const pets = await prisma.pet.findMany()
+    console.log('Pets encontrados no banco:', pets)
 
     const response = await request(app.server)
       .get('/orgs/pets')
-      .query({ city: 'São Paulo' })
+      .query({ city: org.city })
 
     expect(response.status).toBe(200)
     expect(response.body.pets).toHaveLength(2)
@@ -44,182 +54,198 @@ describe('Search Pets (E2E)', () => {
     expect(response.status).toBe(400)
   })
 
-  // it('should be able to search pets by city and age', async () => {
-  //   console.log(token)
+  it('should be able to search pets by city and age', async () => {
+    const org = makeOrg()
 
-  //   await request(app.server)
-  //     .post('/orgs/pets')
-  //     .set('Authorization', `Bearer ${token}`)
-  //     .send(makePet({ age: '1' }))
+    await request(app.server).post('/orgs').send(org)
 
-  //   await request(app.server)
-  //     .post('/orgs/pets')
-  //     .set('Authorization', `Bearer ${token}`)
-  //     .send(makePet({ age: '2' }))
+    const authResponse = await request(app.server)
+      .post('/sessions')
+      .send({ email: org.email, password: org.password })
 
-  //   const response = await request(app.server)
-  //     .get('/orgs/pets')
-  //     .query({ city: 'São Paulo', age: '1' })
+    const token = authResponse.body.token
 
-  //   expect(response.status).toBe(200)
-  //   expect(response.body.pets).toHaveLength(1)
-  // })
+    await request(app.server)
+      .post('/orgs/pets')
+      .set('Authorization', `Bearer ${token}`)
+      .send(makePet({ age: '1' }))
 
-  // it('should be able to search pets by city and size', async () => {
-  //   const org = makeOrg()
+    await request(app.server)
+      .post('/orgs/pets')
+      .set('Authorization', `Bearer ${token}`)
+      .send(makePet({ age: '2' }))
 
-  //   await request(app.server).post('/orgs').send(org)
+    const response = await request(app.server)
+      .get('/orgs/pets')
+      .query({ city: org.city, age: '1' })
 
-  //   const authResponse = await request(app.server)
-  //     .post('/orgs/authenticate')
-  //     .send({ email: org.email, password: org.password })
+    expect(response.status).toBe(200)
+    expect(response.body.pets).toHaveLength(1)
+  })
 
-  //   await request(app.server)
-  //     .post('/orgs/pets')
-  //     .set('Authorization', `Bearer ${authResponse}`)
-  //     .send(makePet({ size: 'small' }))
+  it('should be able to search pets by city and size', async () => {
+    const org = makeOrg()
 
-  //   await request(app.server)
-  //     .post('/orgs/pets')
-  //     .set('Authorization', `Bearer ${authResponse}`)
-  //     .send(makePet({ size: 'medium' }))
+    await request(app.server).post('/orgs').send(org)
 
-  //   await request(app.server)
-  //     .post('/orgs/pets')
-  //     .set('Authorization', `Bearer ${authResponse}`)
-  //     .send(makePet({ size: 'large' }))
+    const authResponse = await request(app.server)
+      .post('/sessions')
+      .send({ email: org.email, password: org.password })
 
-  //   const response = await request(app.server)
-  //     .get('/orgs/pets')
-  //     .query({ city: org.city, size: 'small' })
+    const token = authResponse.body.token
 
-  //   expect(response.status).toBe(200)
-  //   expect(response.body.pets).toHaveLength(1)
-  // })
+    await request(app.server)
+      .post('/orgs/pets')
+      .set('Authorization', `Bearer ${token}`)
+      .send(makePet({ size: 'SMALL' }))
 
-  // it('should be able to search pets by city and energy level', async () => {
-  //   const org = makeOrg()
+    await request(app.server)
+      .post('/orgs/pets')
+      .set('Authorization', `Bearer ${token}`)
+      .send(makePet({ size: 'MEDIUM' }))
 
-  //   await request(app.server).post('/orgs').send(org)
+    await request(app.server)
+      .post('/orgs/pets')
+      .set('Authorization', `Bearer ${token}`)
+      .send(makePet({ size: 'LARGE' }))
 
-  //   const authResponse = await request(app.server)
-  //     .post('/orgs/authenticate')
-  //     .send({ email: org.email, password: org.password })
+    const response = await request(app.server)
+      .get('/orgs/pets')
+      .query({ city: org.city, size: 'SMALL' })
 
-  //   await request(app.server)
-  //     .post('/orgs/pets')
-  //     .set('Authorization', `Bearer ${authResponse}`)
-  //     .send(makePet({ energy_level: 'low' }))
+    expect(response.status).toBe(200)
+    expect(response.body.pets).toHaveLength(1)
+  })
 
-  //   await request(app.server)
-  //     .post('/orgs/pets')
-  //     .set('Authorization', `Bearer ${authResponse}`)
-  //     .send(makePet({ energy_level: 'medium' }))
+  it('should be able to search pets by city and energy level', async () => {
+    const org = makeOrg()
 
-  //   const response = await request(app.server)
-  //     .get('/orgs/pets')
-  //     .query({ city: org.city, energy_level: 'low' })
+    await request(app.server).post('/orgs').send(org)
 
-  //   expect(response.status).toBe(200)
-  //   expect(response.body.pets).toHaveLength(1)
-  // })
+    const authResponse = await request(app.server)
+      .post('/sessions')
+      .send({ email: org.email, password: org.password })
 
-  // it('should be able to search pets by city and environment', async () => {
-  //   const org = makeOrg()
+    const token = authResponse.body.token
 
-  //   await request(app.server).post('/orgs').send(org)
+    await request(app.server)
+      .post('/orgs/pets')
+      .set('Authorization', `Bearer ${token}`)
+      .send(makePet({ energy_level: 'ONE' }))
 
-  //   const authResponse = await request(app.server)
-  //     .post('/orgs/authenticate')
-  //     .send({ email: org.email, password: org.password })
+    await request(app.server)
+      .post('/orgs/pets')
+      .set('Authorization', `Bearer ${token}`)
+      .send(makePet({ energy_level: 'TWO' }))
 
-  //   await request(app.server)
-  //     .post('/orgs/pets')
-  //     .set('Authorization', `Bearer ${authResponse}`)
-  //     .send(makePet({ environment: 'indoor' }))
+    const response = await request(app.server)
+      .get('/orgs/pets')
+      .query({ city: org.city, energy_level: 'ONE' })
 
-  //   const response = await request(app.server)
-  //     .get('/orgs/pets')
-  //     .query({ city: org.city, environment: 'indoor' })
+    expect(response.status).toBe(200)
+    expect(response.body.pets).toHaveLength(1)
+  })
 
-  //   expect(response.status).toBe(200)
-  //   expect(response.body.pets).toHaveLength(1)
-  // })
+  it('should be able to search pets by city and environment', async () => {
+    const org = makeOrg()
 
-  // // create a test with a lot of pets that combines all the filters
-  // it('should be able to search pets by city and all filters', async () => {
-  //   const org = makeOrg()
+    await request(app.server).post('/orgs').send(org)
 
-  //   await request(app.server).post('/orgs').send(org)
+    const authResponse = await request(app.server)
+      .post('/sessions')
+      .send({ email: org.email, password: org.password })
 
-  //   const authResponse = await request(app.server)
-  //     .post('/orgs/authenticate')
-  //     .send({ email: org.email, password: org.password })
+    const token = authResponse.body.token
 
-  //   const pets = [
-  //     makePet({
-  //       age: '1',
-  //       size: 'small',
-  //       energy_level: 'low',
-  //       environment: 'indoor',
-  //     }),
-  //     makePet({
-  //       age: '2',
-  //       size: 'medium',
-  //       energy_level: 'medium',
-  //       environment: 'outdoor',
-  //     }),
-  //     makePet({
-  //       age: '1',
-  //       size: 'large',
-  //       energy_level: 'high',
-  //       environment: 'indoor',
-  //     }),
-  //     makePet({
-  //       age: '4',
-  //       size: 'small',
-  //       energy_level: 'low',
-  //       environment: 'outdoor',
-  //     }),
-  //     makePet({
-  //       age: '5',
-  //       size: 'medium',
-  //       energy_level: 'medium',
-  //       environment: 'indoor',
-  //     }),
-  //   ]
+    await request(app.server)
+      .post('/orgs/pets')
+      .set('Authorization', `Bearer ${token}`)
+      .send(makePet({ environment: 'SMALL_SPACE' }))
 
-  //   await Promise.all(
-  //     pets.map((pet) =>
-  //       request(app.server)
-  //         .post('/orgs/pets')
-  //         .set('Authorization', `Bearer ${authResponse}`)
-  //         .send(pet),
-  //     ),
-  //   )
+    const response = await request(app.server)
+      .get('/orgs/pets')
+      .query({ city: org.city, environment: 'SMALL_SPACE' })
 
-  //   let response = await request(app.server).get('/orgs/pets').query({
-  //     city: org.city,
-  //     age: '1',
-  //     size: 'small',
-  //     energy_level: 'low',
-  //     environment: 'indoor',
-  //   })
+    expect(response.status).toBe(200)
+    expect(response.body.pets).toHaveLength(1)
+  })
 
-  //   expect(response.body.pets).toHaveLength(1)
+  // create a test with a lot of pets that combines all the filters
+  it('should be able to search pets by city and all filters', async () => {
+    const org = makeOrg()
 
-  //   response = await request(app.server).get('/orgs/pets').query({
-  //     city: org.city,
-  //     size: 'medium',
-  //   })
+    await request(app.server).post('/orgs').send(org)
 
-  //   expect(response.body.pets).toHaveLength(2)
+    const authResponse = await request(app.server)
+      .post('/sessions')
+      .send({ email: org.email, password: org.password })
 
-  //   response = await request(app.server).get('/orgs/pets').query({
-  //     city: org.city,
-  //     energy_level: 'low',
-  //   })
+    const token = authResponse.body.token
 
-  //   expect(response.body.pets).toHaveLength(2)
-  // })
+    const pets = [
+      makePet({
+        age: '1',
+        size: 'SMALL',
+        energy_level: 'ONE',
+        environment: 'SMALL_SPACE',
+      }),
+      makePet({
+        age: '2',
+        size: 'MEDIUM',
+        energy_level: 'THREE',
+        environment: 'SMALL_SPACE',
+      }),
+      makePet({
+        age: '1',
+        size: 'LARGE',
+        energy_level: 'FIVE',
+        environment: 'SMALL_SPACE',
+      }),
+      makePet({
+        age: '4',
+        size: 'SMALL',
+        energy_level: 'ONE',
+        environment: 'SMALL_SPACE',
+      }),
+      makePet({
+        age: '5',
+        size: 'MEDIUM',
+        energy_level: 'ONE',
+        environment: 'SMALL_SPACE',
+      }),
+    ]
+
+    await Promise.all(
+      pets.map((pet) =>
+        request(app.server)
+          .post('/orgs/pets')
+          .set('Authorization', `Bearer ${token}`)
+          .send(pet),
+      ),
+    )
+
+    let response = await request(app.server).get('/orgs/pets').query({
+      city: org.city,
+      age: '1',
+      size: 'SMALL',
+      energy_level: 'ONE',
+      environment: 'SMALL_SPACE',
+    })
+
+    expect(response.body.pets).toHaveLength(1)
+
+    response = await request(app.server).get('/orgs/pets').query({
+      city: org.city,
+      size: 'MEDIUM',
+    })
+
+    expect(response.body.pets).toHaveLength(2)
+
+    response = await request(app.server).get('/orgs/pets').query({
+      city: org.city,
+      energy_level: 'ONE',
+    })
+
+    expect(response.body.pets).toHaveLength(3)
+  })
 })
