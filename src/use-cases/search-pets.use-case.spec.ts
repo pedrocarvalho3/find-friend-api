@@ -5,7 +5,7 @@ import { SearchPetsUseCase } from './search-pets.use-case'
 import { makePet } from 'tests/factories/make-pet.fatory'
 import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs.repository'
 import { makeOrg } from 'tests/factories/make-org.factory'
-import { EnergyLevel, Environment, PetSize } from '@prisma/client'
+import { EnergyLevel, Environment, PetAge, PetSize } from '@prisma/client'
 
 describe('Search Pets Use Case', () => {
   let orgsRepository: InMemoryOrgsRepository
@@ -40,10 +40,10 @@ describe('Search Pets Use Case', () => {
   it('should be able to search pets by city and age', async () => {
     const org = await orgsRepository.create(makeOrg())
 
-    await petsRepository.create(makePet({ org_id: org.id, age: '1' }))
+    await petsRepository.create(makePet({ org_id: org.id, age: PetAge.PUPPY }))
     await petsRepository.create(makePet({ org_id: org.id }))
 
-    const { pets } = await sut.execute({ city: org.city, age: '1' })
+    const { pets } = await sut.execute({ city: org.city, age: PetAge.PUPPY })
 
     expect(pets).toHaveLength(1)
   })
@@ -70,24 +70,24 @@ describe('Search Pets Use Case', () => {
     const org = await orgsRepository.create(makeOrg())
 
     await petsRepository.create(
-      makePet({ org_id: org.id, energy_level: EnergyLevel.ONE }),
+      makePet({ org_id: org.id, energy_level: EnergyLevel.VERY_LOW }),
     )
     await petsRepository.create(
-      makePet({ org_id: org.id, energy_level: EnergyLevel.TWO }),
+      makePet({ org_id: org.id, energy_level: EnergyLevel.LOW }),
     )
     await petsRepository.create(
-      makePet({ org_id: org.id, energy_level: EnergyLevel.THREE }),
+      makePet({ org_id: org.id, energy_level: EnergyLevel.MEDIUM }),
     )
     await petsRepository.create(
-      makePet({ org_id: org.id, energy_level: EnergyLevel.FOUR }),
+      makePet({ org_id: org.id, energy_level: EnergyLevel.HIGH }),
     )
     await petsRepository.create(
-      makePet({ org_id: org.id, energy_level: EnergyLevel.FIVE }),
+      makePet({ org_id: org.id, energy_level: EnergyLevel.VERY_HIGH }),
     )
 
     const { pets } = await sut.execute({
       city: org.city,
-      energy_level: EnergyLevel.ONE,
+      energy_level: EnergyLevel.VERY_LOW,
     })
 
     expect(pets).toHaveLength(1)

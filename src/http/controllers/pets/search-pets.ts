@@ -7,7 +7,9 @@ export async function searchPets(request: FastifyRequest, reply: FastifyReply) {
     city: z.string().min(1),
     age: z.string().optional(),
     size: z.enum(['SMALL', 'MEDIUM', 'LARGE']).optional(),
-    energy_level: z.enum(['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE']).optional(),
+    energy_level: z
+      .enum(['VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'])
+      .optional(),
     environment: z
       .enum(['SMALL_SPACE', 'MEDIUM_SPACE', 'LARGE_SPACE'])
       .optional(),

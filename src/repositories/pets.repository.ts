@@ -2,13 +2,14 @@ import type {
   EnergyLevel,
   Environment,
   Pet,
+  PetAge,
   PetSize,
   Prisma,
 } from '@prisma/client'
 
 export interface FindAllParams {
   city: string
-  age?: string
+  age?: PetAge
   size?: PetSize
   energy_level?: EnergyLevel
   environment?: Environment

@@ -5,7 +5,7 @@ import { app } from '@/app'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { makeOrg } from 'tests/factories/make-org.factory'
 import { makePet } from 'tests/factories/make-pet.fatory'
-import { prisma } from '@/lib/prisma'
+import { EnergyLevel, PetAge } from '@prisma/client'
 
 describe('Search Pets (E2E)', () => {
   beforeAll(async () => {
@@ -37,9 +37,6 @@ describe('Search Pets (E2E)', () => {
       .set('Authorization', `Bearer ${token}`)
       .send(makePet())
 
-    const pets = await prisma.pet.findMany()
-    console.log('Pets encontrados no banco:', pets)
-
     const response = await request(app.server)
       .get('/orgs/pets')
       .query({ city: org.city })
@@ -68,19 +65,24 @@ describe('Search Pets (E2E)', () => {
     await request(app.server)
       .post('/orgs/pets')
       .set('Authorization', `Bearer ${token}`)
-      .send(makePet({ age: '1' }))
+      .send(makePet({ age: PetAge.PUPPY }))
 
     await request(app.server)
       .post('/orgs/pets')
       .set('Authorization', `Bearer ${token}`)
-      .send(makePet({ age: '2' }))
+      .send(makePet({ age: PetAge.PUPPY }))
+
+    await request(app.server)
+      .post('/orgs/pets')
+      .set('Authorization', `Bearer ${token}`)
+      .send(makePet({ age: PetAge.ADULT }))
 
     const response = await request(app.server)
       .get('/orgs/pets')
-      .query({ city: org.city, age: '1' })
+      .query({ city: org.city, age: PetAge.PUPPY })
 
     expect(response.status).toBe(200)
-    expect(response.body.pets).toHaveLength(1)
+    expect(response.body.pets).toHaveLength(2)
   })
 
   it('should be able to search pets by city and size', async () => {
@@ -131,19 +133,24 @@ describe('Search Pets (E2E)', () => {
     await request(app.server)
       .post('/orgs/pets')
       .set('Authorization', `Bearer ${token}`)
-      .send(makePet({ energy_level: 'ONE' }))
+      .send(makePet({ energy_level: EnergyLevel.VERY_LOW }))
 
     await request(app.server)
       .post('/orgs/pets')
       .set('Authorization', `Bearer ${token}`)
-      .send(makePet({ energy_level: 'TWO' }))
+      .send(makePet({ energy_level: EnergyLevel.LOW }))
+
+    await request(app.server)
+      .post('/orgs/pets')
+      .set('Authorization', `Bearer ${token}`)
+      .send(makePet({ energy_level: EnergyLevel.LOW }))
 
     const response = await request(app.server)
       .get('/orgs/pets')
-      .query({ city: org.city, energy_level: 'ONE' })
+      .query({ city: org.city, energy_level: EnergyLevel.LOW })
 
     expect(response.status).toBe(200)
-    expect(response.body.pets).toHaveLength(1)
+    expect(response.body.pets).toHaveLength(2)
   })
 
   it('should be able to search pets by city and environment', async () => {
@@ -184,33 +191,33 @@ describe('Search Pets (E2E)', () => {
 
     const pets = [
       makePet({
-        age: '1',
+        age: 'PUPPY',
         size: 'SMALL',
-        energy_level: 'ONE',
+        energy_level: 'VERY_LOW',
         environment: 'SMALL_SPACE',
       }),
       makePet({
-        age: '2',
+        age: 'ADULT',
         size: 'MEDIUM',
-        energy_level: 'THREE',
+        energy_level: 'MEDIUM',
         environment: 'SMALL_SPACE',
       }),
       makePet({
-        age: '1',
+        age: 'PUPPY',
         size: 'LARGE',
-        energy_level: 'FIVE',
+        energy_level: 'VERY_HIGH',
         environment: 'SMALL_SPACE',
       }),
       makePet({
-        age: '4',
+        age: 'ELDERLY',
         size: 'SMALL',
-        energy_level: 'ONE',
+        energy_level: 'VERY_LOW',
         environment: 'SMALL_SPACE',
       }),
       makePet({
-        age: '5',
+        age: 'ELDERLY',
         size: 'MEDIUM',
-        energy_level: 'ONE',
+        energy_level: 'VERY_LOW',
         environment: 'SMALL_SPACE',
       }),
     ]
@@ -226,9 +233,9 @@ describe('Search Pets (E2E)', () => {
 
     let response = await request(app.server).get('/orgs/pets').query({
       city: org.city,
-      age: '1',
+      age: 'PUPPY',
       size: 'SMALL',
-      energy_level: 'ONE',
+      energy_level: 'VERY_LOW',
       environment: 'SMALL_SPACE',
     })
 
@@ -243,7 +250,7 @@ describe('Search Pets (E2E)', () => {
 
     response = await request(app.server).get('/orgs/pets').query({
       city: org.city,
-      energy_level: 'ONE',
+      energy_level: 'VERY_LOW',
     })
 
     expect(response.body.pets).toHaveLength(3)

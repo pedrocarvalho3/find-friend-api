@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PetAge {
+  PUPPY
+  ADULT
+  ELDERLY
+}
+
 enum PetSize {
   SMALL
   MEDIUM
@@ -14,13 +20,20 @@ enum PetSize {
 }
 
 enum EnergyLevel {
-  ONE
-  TWO
-  THREE
-  FOUR
-  FIVE
+  VERY_LOW   
+  LOW        
+  MEDIUM     
+  HIGH       
+  VERY_HIGH
 }
 
+enum DependencyLevel {
+  VERY_LOW   
+  LOW        
+  MEDIUM     
+  HIGH       
+  VERY_HIGH
+}
 
 enum Environment {
   SMALL_SPACE    
@@ -54,11 +67,15 @@ model Pet {
   id           String @id @default(uuid())
   name         String
   about        String
-  age          String
+  age          PetAge
   size         PetSize 
   energy_level EnergyLevel
+  dependency_level DependencyLevel
   environment  Environment
   org_id       String
+
+  photos             String[]    
+  adoption_requirements String[]
 
   org Org @relation(fields: [org_id], references: [id])
 

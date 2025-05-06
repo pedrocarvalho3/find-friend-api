@@ -15,7 +15,7 @@ describe('Refresh Token (e2e)', () => {
     await request(app.server).post('/orgs').send({
       name: 'John Doe',
       email: 'johndoe@example.com',
-      password: '123456',
+      password: '12345678',
       author_name: 'John Doe',
       whatsapp: '11999999999',
       cep: '12345678',
@@ -29,7 +29,7 @@ describe('Refresh Token (e2e)', () => {
 
     const authResponse = await request(app.server).post('/sessions').send({
       email: 'johndoe@example.com',
-      password: '123456',
+      password: '12345678',
     })
 
     const cookies = authResponse.get('Set-Cookie')

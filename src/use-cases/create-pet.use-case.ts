@@ -6,10 +6,11 @@ import { ResourceNotFoundError } from './errors/resource-not-found.error'
 interface CreatePetUseCaseRequest {
   name: string
   about: string
-  age: string
+  age: $Enums.PetAge
   size: $Enums.PetSize
   energy_level: $Enums.EnergyLevel
   environment: $Enums.Environment
+  dependency_level: $Enums.DependencyLevel
   orgId: string
 }
 
@@ -30,6 +31,7 @@ export class CreatePetUseCase {
     size,
     energy_level,
     environment,
+    dependency_level,
     orgId,
   }: CreatePetUseCaseRequest): Promise<CreatePetUseCaseResponse> {
     const org = await this.orgsRepository.findById(orgId)
@@ -45,6 +47,7 @@ export class CreatePetUseCase {
       size,
       energy_level,
       environment,
+      dependency_level,
       org_id: orgId,
     })
 

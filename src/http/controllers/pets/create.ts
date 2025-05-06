@@ -7,10 +7,17 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
   const createBodySchema = z.object({
     name: z.string(),
     about: z.string(),
-    age: z.string(),
+    age: z.enum(['PUPPY', 'ADULT', 'ELDERLY']),
     size: z.enum(['SMALL', 'MEDIUM', 'LARGE']),
-    energy_level: z.enum(['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE']),
+    energy_level: z.enum(['VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH']),
     environment: z.enum(['SMALL_SPACE', 'MEDIUM_SPACE', 'LARGE_SPACE']),
+    dependency_level: z.enum([
+      'VERY_LOW',
+      'LOW',
+      'MEDIUM',
+      'HIGH',
+      'VERY_HIGH',
+    ]),
   })
 
   const body = createBodySchema.parse(request.body)
