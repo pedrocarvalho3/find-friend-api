@@ -5,7 +5,7 @@ import { getPet } from './get-pet'
 import { searchPets } from './search-pets'
 
 export async function petsRoutes(app: FastifyInstance) {
-  app.post('/orgs/pets', { onRequest: [verifyJWT] }, create)
-  app.get('/orgs/pets', searchPets)
-  app.get('/orgs/pets/:id', getPet)
+  app.post('/pets', { onRequest: [verifyJWT] }, create)
+  app.get('/pets', searchPets)
+  app.get('/pets/:id', getPet)
 }

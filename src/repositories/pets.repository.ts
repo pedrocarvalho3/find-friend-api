@@ -1,4 +1,5 @@
 import type {
+  DependencyLevel,
   EnergyLevel,
   Environment,
   Pet,
@@ -13,6 +14,7 @@ export interface FindAllParams {
   size?: PetSize
   energy_level?: EnergyLevel
   environment?: Environment
+  dependency_level?: DependencyLevel
 }
 
 export interface PetsRepository {

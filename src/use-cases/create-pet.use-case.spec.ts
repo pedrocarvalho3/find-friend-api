@@ -3,7 +3,13 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { CreatePetUseCase } from './create-pet.use-case'
 import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs.repository'
 import { Decimal } from '@prisma/client/runtime/library'
-import { EnergyLevel, Environment, PetSize } from '@prisma/client'
+import {
+  DependencyLevel,
+  EnergyLevel,
+  Environment,
+  PetAge,
+  PetSize,
+} from '@prisma/client'
 
 let petsRepository: InMemoryPetsRepository
 let orgsRepository: InMemoryOrgsRepository
@@ -36,10 +42,13 @@ describe('Create Pet Use Case', () => {
     const { pet } = await sut.execute({
       name: 'John Doe',
       about: 'John Doe',
-      age: 'John Doe',
+      age: PetAge.ELDERLY,
       size: PetSize.SMALL,
-      energy_level: EnergyLevel.ONE,
+      energy_level: EnergyLevel.VERY_LOW,
       environment: Environment.SMALL_SPACE,
+      dependency_level: DependencyLevel.LOW,
+      adoption_requirements: ['olá', 'teste', 'cu'],
+      photos: ['olá', 'teste', 'cu'],
       orgId: 'org-1',
     })
 

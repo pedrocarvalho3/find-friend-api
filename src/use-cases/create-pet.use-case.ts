@@ -11,6 +11,8 @@ interface CreatePetUseCaseRequest {
   energy_level: $Enums.EnergyLevel
   environment: $Enums.Environment
   dependency_level: $Enums.DependencyLevel
+  adoption_requirements: string[]
+  photos: string[]
   orgId: string
 }
 
@@ -32,6 +34,8 @@ export class CreatePetUseCase {
     energy_level,
     environment,
     dependency_level,
+    adoption_requirements,
+    photos,
     orgId,
   }: CreatePetUseCaseRequest): Promise<CreatePetUseCaseResponse> {
     const org = await this.orgsRepository.findById(orgId)
@@ -48,6 +52,8 @@ export class CreatePetUseCase {
       energy_level,
       environment,
       dependency_level,
+      adoption_requirements,
+      photos,
       org_id: orgId,
     })
 

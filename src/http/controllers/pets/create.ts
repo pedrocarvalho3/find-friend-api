@@ -18,6 +18,8 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
       'HIGH',
       'VERY_HIGH',
     ]),
+    photos: z.array(z.string()).nonempty(),
+    adoption_requirements: z.array(z.string()).nonempty(),
   })
 
   const body = createBodySchema.parse(request.body)

@@ -23,6 +23,11 @@ export class InMemoryPetsRepository implements PetsRepository {
       .filter((item) =>
         params.environment ? item.environment === params.environment : true,
       )
+      .filter((item) =>
+        params.dependency_level
+          ? item.dependency_level === params.dependency_level
+          : true,
+      )
 
     return pets
   }
